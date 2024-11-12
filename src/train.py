@@ -40,8 +40,8 @@ def train_one_epoch(
             outputs = model(inputs)
             
             # ? Getting Loss
-            print(outputs.shape, outputs.dtype)
-            print(labels.shape, labels.dtype)
+            # print(outputs.shape, outputs.dtype)
+            # print(labels.shape, labels.dtype)
             # exit()
             batch_loss = criterion(outputs, labels)
             batch_loss_list.append(batch_loss.item())
@@ -94,9 +94,9 @@ def test_one_epoch(
                 )
 
                 # TODO: Change logic to account for PCK (Percentage Correct Keypoints)
-                _, predictions = outputs.max(1)
-                num_correct += (predictions == labels).sum()
-                num_samples += predictions.size(0)
+                # _, predictions = outputs.max(1)
+                # num_correct += (predictions == labels).sum()
+                # num_samples += predictions.size(0)
 
 
     
@@ -104,7 +104,7 @@ def test_one_epoch(
         'epoch_idx': epoch_index,
         'batch_losses': batch_loss_list,
         'epoch_loss': np.mean(batch_loss_list),
-        'accuracy': (num_correct / num_samples).item()
+        # 'accuracy': (num_correct / num_samples).item()
     }
 
 
@@ -123,6 +123,7 @@ def train(
 
     
     best_acc = 0
+    best_test_loss = np.inf
     train_statistics_list = []
     for epoch in range(epochs):
         # * Training Code
@@ -130,7 +131,7 @@ def train(
             model, optimizer, train_dataloader, epoch, criterion, device
         )
         train_statistics_list.append(train_epoch_statistics)
-        # live.log_metric('train/loss', train_epoch_statistics['epoch_loss'], plot=True)
+        live.log_metric('train/loss', train_epoch_statistics['epoch_loss'], plot=True)
         if scheduler:
             scheduler.step()
         
@@ -138,13 +139,23 @@ def train(
         test_epoch_statistics = test_one_epoch(
             model, optimizer, test_dataloader, epoch, criterion, device
         )
-        latest_test_acc = test_epoch_statistics['accuracy']
-        if latest_test_acc > best_acc:
-            print(f'UPDATING BEST ACC [{best_acc}] -> [{latest_test_acc}]')
-            best_acc = latest_test_acc
-            save_checkpoint(model, epoch, optimizer, best_acc, 'models/best_model.pth')
-        print(latest_test_acc, type(latest_test_acc))
-        # live.log_metric('test/loss', test_epoch_statistics['epoch_loss'], plot=True)
+        # TODO: Change code to account for PCK instead of accuracy
+        # latest_test_acc = test_epoch_statistics['accuracy']
+        # if latest_test_acc > best_acc:
+        #     print(f'UPDATING BEST ACC [{best_acc}] -> [{latest_test_acc}]')
+        #     best_acc = latest_test_acc
+        #     save_checkpoint(model, epoch, optimizer, best_acc, 'models/best_model.pth')
+
+        latest_test_loss = test_epoch_statistics['epoch_loss']
+        if latest_test_loss < best_test_loss:
+            print(f'UPDATING BEST LOSS [{best_test_loss}] -> [{latest_test_loss}]')
+            best_test_loss = latest_test_loss
+            save_checkpoint(model, epoch, optimizer, best_test_loss, 'models/best_model.pth')
+            
+
+
+        # print(latest_test_acc, type(latest_test_acc))
+        live.log_metric('test/loss', test_epoch_statistics['epoch_loss'], plot=True)
         # live.log_metric('test/accuracy', test_epoch_statistics['accuracy'], plot=True)
 
 
@@ -186,7 +197,6 @@ SCHEDULER = params['SCHEDULER']
 MODEL_STRUCTURE = params['MODEL_STRUCTURE']
 
 CRITERION = params['CRITERION']
-# DATA_AUG = params['DATA_AUG']
 
 # MAX_PARAMS = params['MAX_PARAMS']
 # MAX_EPOCHS = params['MAX_EPOCHS']
@@ -194,8 +204,8 @@ CRITERION = params['CRITERION']
 
 torch.manual_seed(1)
 
-# live = Live('metrics', dvcyaml=False, save_dvc_exp=True)
-live = None
+live = Live('metrics', dvcyaml=False, save_dvc_exp=True)
+# live = None
 
 os.makedirs('models', exist_ok=True)
 os.makedirs('metrics', exist_ok=True)

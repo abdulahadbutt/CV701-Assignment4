@@ -1,0 +1,38 @@
+stages:
+  train:
+    cmd: python src/train.py
+    deps:
+    - data/
+    - src/train.py
+    - src/models.py
+    params:
+    - MODEL_STRUCTURE
+    - EPOCHS
+    - BATCH_SIZE
+    - IMG_SIZE
+    - OPTIMIZER
+    - LEARNING_RATE
+    - SCHEDULER
+    - CRITERION
+    outs:
+    - metrics
+    - models
+
+metrics:
+- metrics/metrics.json
+plots:
+  - training loss:
+      template: simple
+      x: step
+      y:
+        metrics/plots/metrics/train/loss.tsv: loss
+  - test loss:
+      template: simple
+      x: step
+      y:
+        metrics/plots/metrics/test/loss.tsv: loss
+  - test accuracy:
+      template: simple
+      x: step
+      y:
+        metrics/plots/metrics/test/accuracy.tsv: accuracy
