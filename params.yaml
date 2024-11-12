@@ -1,0 +1,35 @@
+# * Model Choice
+# Current choices: resnet18, resnet34, resnet50, resnet101, resnet152
+MODEL_STRUCTURE: resnet18
+
+# ? Hyperparameters
+EPOCHS: 30
+BATCH_SIZE: 16
+# Current optimzer support: sgd, adam, adamw, rmsprop
+OPTIMIZER: 'adam' 
+LEARNING_RATE: 0.001
+IMG_SIZE : 160
+# Current scheduler support: None, 'constant', 'exponential'
+SCHEDULER: constant
+# Current scheduler support: None, 'horizontal_flip', 'affine'
+DATA_AUG: horizontal_flip
+CRITERION: mse
+# ? Data stuff (no need to change)
+ROOT_DIR : 'data'
+classes : [
+    "Australian terrier", 
+    "Border terrier",
+    "Samoyed", 
+    "Beagle", 
+    "Shih-Tzu", 
+    "English foxhound", 
+    "Rhodesian ridgeback", 
+    "Dingo", 
+    "Golden retriever", 
+    "Old English sheepdog"
+]
+
+
+# ? Assignments constraints
+MAX_PARAMS: 3_000_000
+MAX_EPOCHS: 50
