@@ -1,0 +1,43 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/
+      hash: md5
+      md5: 8e669fdb4fd57aa1712751ce03803efb.dir
+      size: 340016128
+      nfiles: 5773
+    - path: src/dataset.py
+      hash: md5
+      md5: b5d45ef1f59710a46ea2d5873dc70dd4
+      size: 2399
+    - path: src/models.py
+      hash: md5
+      md5: 451ee03baf3dec7a451d931b45fda4f8
+      size: 627
+    - path: src/train.py
+      hash: md5
+      md5: b48a8b8c02937d64554d91a8a0c9b31d
+      size: 8184
+    params:
+      params.yaml:
+        BATCH_SIZE: 16
+        CRITERION: mse
+        EPOCHS: 4
+        IMG_SIZE: 224
+        LEARNING_RATE: 0.001
+        MODEL_STRUCTURE: resnet18
+        OPTIMIZER: adam
+        SCHEDULER: constant
+    outs:
+    - path: metrics
+      hash: md5
+      md5: 1a233da7dd124011aa8d5f74e193746f.dir
+      size: 348
+      nfiles: 3
+    - path: models
+      hash: md5
+      md5: 2fd83b10794c8f268d2e7a3a6a1a9d23.dir
+      size: 270176276
+      nfiles: 2

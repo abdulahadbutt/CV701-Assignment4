@@ -3,7 +3,7 @@
 MODEL_STRUCTURE: resnet18
 
 # ? Hyperparameters
-EPOCHS: 30
+EPOCHS: 4
 BATCH_SIZE: 16
 IMG_SIZE : 224
 # Current optimzer support: sgd, adam, adamw, rmsprop
@@ -14,3 +14,4 @@ SCHEDULER: constant
 # Current criterion support: mse, cross-entropy
 CRITERION: mse
 
+ROOT_DIR: data
