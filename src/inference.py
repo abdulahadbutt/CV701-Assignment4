@@ -11,6 +11,7 @@ import os
 import yaml 
 from tqdm import tqdm
 from torchvision import transforms
+import os 
 
 
 def load_checkpoint(path):
@@ -19,6 +20,8 @@ def load_checkpoint(path):
     model.load_state_dict(weights)
     return model 
 
+
+os.makedirs('data/predictions', exist_ok=True)
 
 params = yaml.safe_load(open('params.yaml'))
 ROOT_DIR = params['ROOT_DIR']

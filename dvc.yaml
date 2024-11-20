@@ -1,8 +1,9 @@
 stages:
+
+
   train:
     cmd: python src/train.py
     deps:
-    - data/
     - src/train.py
     - src/models.py
     - src/dataset.py
@@ -19,6 +20,20 @@ stages:
     - metrics
     - models
 
+  inference:
+    cmd: python src/inference.py
+    deps:
+      - src/inference.py
+      - models/
+      - data/test/
+      - data/test_frames_keypoints.csv
+    params:
+      - ROOT_DIR
+      - IMG_SIZE
+    outs:
+      - data/predictions
+
+
 metrics:
 - metrics/metrics.json
 plots:
@@ -32,8 +47,8 @@ plots:
       x: step
       y:
         metrics/plots/metrics/test/loss.tsv: loss
-  - test accuracy:
-      template: simple
-      x: step
-      y:
-        metrics/plots/metrics/test/accuracy.tsv: accuracy
+  # - test accuracy:
+  #     template: simple
+  #     x: step
+  #     y:
+  #       metrics/plots/metrics/test/accuracy.tsv: accuracy

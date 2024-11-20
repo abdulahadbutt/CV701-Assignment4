@@ -3,15 +3,10 @@ stages:
   train:
     cmd: python src/train.py
     deps:
-    - path: data/
-      hash: md5
-      md5: 8e669fdb4fd57aa1712751ce03803efb.dir
-      size: 340016128
-      nfiles: 5773
     - path: src/dataset.py
       hash: md5
-      md5: b5d45ef1f59710a46ea2d5873dc70dd4
-      size: 2399
+      md5: 730cec05e71a61bc1860eb63ec55c4d3
+      size: 2539
     - path: src/models.py
       hash: md5
       md5: 451ee03baf3dec7a451d931b45fda4f8
@@ -24,7 +19,7 @@ stages:
       params.yaml:
         BATCH_SIZE: 16
         CRITERION: mse
-        EPOCHS: 4
+        EPOCHS: 30
         IMG_SIZE: 224
         LEARNING_RATE: 0.001
         MODEL_STRUCTURE: resnet18
@@ -33,11 +28,42 @@ stages:
     outs:
     - path: metrics
       hash: md5
-      md5: 1a233da7dd124011aa8d5f74e193746f.dir
-      size: 348
+      md5: d94259fe26b1a3cc5251b2fdcc03fe95.dir
+      size: 1612
       nfiles: 3
     - path: models
       hash: md5
-      md5: 2fd83b10794c8f268d2e7a3a6a1a9d23.dir
+      md5: a8df0af986984c49bb75cb103f1dd33b.dir
       size: 270176276
       nfiles: 2
+  inference:
+    cmd: python src/inference.py
+    deps:
+    - path: data/test/
+      hash: md5
+      md5: b343e853ed6d903a57c501accb8dbdc8.dir
+      size: 134925109
+      nfiles: 2308
+    - path: data/test_frames_keypoints.csv
+      hash: md5
+      md5: dd5e5e457a314cec0f593bc034b147db
+      size: 590606
+    - path: models/
+      hash: md5
+      md5: a8df0af986984c49bb75cb103f1dd33b.dir
+      size: 270176276
+      nfiles: 2
+    - path: src/inference.py
+      hash: md5
+      md5: 8977eb38aaec00b633a80496d62ad707
+      size: 2295
+    params:
+      params.yaml:
+        IMG_SIZE: 224
+        ROOT_DIR: data
+    outs:
+    - path: data/predictions
+      hash: md5
+      md5: 6b962690067bf839331de1ae776bb9d9.dir
+      size: 105785316
+      nfiles: 770
