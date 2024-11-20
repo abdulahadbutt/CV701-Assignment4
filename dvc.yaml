@@ -47,6 +47,12 @@ plots:
       x: step
       y:
         metrics/plots/metrics/test/loss.tsv: loss
+
+  - test pck:
+      template: simple
+      x: step
+      y:
+        metrics/plots/metrics/test/pck.tsv: pck
   # - test accuracy:
   #     template: simple
   #     x: step

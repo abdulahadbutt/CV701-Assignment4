@@ -13,13 +13,13 @@ stages:
       size: 627
     - path: src/train.py
       hash: md5
-      md5: b48a8b8c02937d64554d91a8a0c9b31d
-      size: 8184
+      md5: 7ce5701a5a94a89ba8bf8e3e6e80a743
+      size: 10641
     params:
       params.yaml:
         BATCH_SIZE: 16
         CRITERION: mse
-        EPOCHS: 30
+        EPOCHS: 10
         IMG_SIZE: 224
         LEARNING_RATE: 0.001
         MODEL_STRUCTURE: resnet18
@@ -28,12 +28,12 @@ stages:
     outs:
     - path: metrics
       hash: md5
-      md5: d94259fe26b1a3cc5251b2fdcc03fe95.dir
-      size: 1612
-      nfiles: 3
+      md5: 00e6d5073b63adb1557d01999cb27508.dir
+      size: 870
+      nfiles: 4
     - path: models
       hash: md5
-      md5: a8df0af986984c49bb75cb103f1dd33b.dir
+      md5: 03039106990fd310dc8e9ccd7ecae7b1.dir
       size: 270176276
       nfiles: 2
   inference:
@@ -50,7 +50,7 @@ stages:
       size: 590606
     - path: models/
       hash: md5
-      md5: a8df0af986984c49bb75cb103f1dd33b.dir
+      md5: 03039106990fd310dc8e9ccd7ecae7b1.dir
       size: 270176276
       nfiles: 2
     - path: src/inference.py
@@ -64,6 +64,6 @@ stages:
     outs:
     - path: data/predictions
       hash: md5
-      md5: 6b962690067bf839331de1ae776bb9d9.dir
-      size: 105785316
+      md5: f8608737d09ace72a912ec238cfd552c.dir
+      size: 106030315
       nfiles: 770

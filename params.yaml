@@ -3,7 +3,7 @@
 MODEL_STRUCTURE: resnet18
 
 # ? Hyperparameters
-EPOCHS: 30
+EPOCHS: 10
 BATCH_SIZE: 16
 IMG_SIZE : 224
 # Current optimzer support: sgd, adam, adamw, rmsprop

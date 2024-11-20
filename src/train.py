@@ -15,6 +15,40 @@ from torchvision import transforms
 # TODO: Need to change accuracy measure to something like MSE or PCK (Percentage Correct Keypoints)
 
 
+def compute_nme(predicted_landmarks, ground_truth_landmarks, normalization_factor):
+    # TODO: Add this metric to track
+    distances = torch.norm(predicted_landmarks - ground_truth_landmarks, dim=2)  # (batch_size, num_landmarks)
+
+    # Normalize distances
+    nme_per_sample = distances.sum(dim=1) / (predicted_landmarks.size(1) * normalization_factor)  # (batch_size,)
+    return nme_per_sample.mean().item()
+
+
+
+
+def compute_pck(predicted_landmarks, groundtruth_landmarks, normalization_factor, threshold=0.4):
+    distances = torch.norm(predicted_landmarks - groundtruth_landmarks, dim=2)
+    normalized_distances = distances / normalization_factor.unsqueeze(1)
+    correct_keypoints = (normalized_distances < threshold).float()
+    return correct_keypoints.mean().item()
+
+
+def compute_interocular_distance(landmarks):
+    # Indices for left and right eye landmarks (adjust based on dataset)
+    left_eye_indices = [36, 37, 38, 39, 40, 41]  # Example for 68-point dataset
+    right_eye_indices = [42, 43, 44, 45, 46, 47]
+
+    # Compute the mean positions for left and right eyes
+    left_eye_center = landmarks[:, left_eye_indices, :].mean(dim=1)  # (batch_size, 2)
+    right_eye_center = landmarks[:, right_eye_indices, :].mean(dim=1)  # (batch_size, 2)
+
+    # Compute Euclidean distance
+    interocular_distances = torch.norm(left_eye_center - right_eye_center, dim=1)  # (batch_size,)
+    # print(f'interocular distances: {interocular_distances}')
+    return interocular_distances
+
+
+
 
 def train_one_epoch(
     model: torch.nn.Module,
@@ -27,6 +61,7 @@ def train_one_epoch(
     model.train()
     with tqdm(data_loader, unit='batch') as data:
         batch_loss_list = []
+        batch_pck_list = []
         for batch in data:
             data.set_description(f"Epoch {epoch_index}")
 
@@ -37,11 +72,16 @@ def train_one_epoch(
             # inputs, labels = batch[0].to(device), batch[1].to(device)
             optimizer.zero_grad()
 
+            # * outputs.shape = [16, 68, 2] = [batch_size, # keypoints // 2, 2]
             outputs = model(inputs)
+
             
             # ? Getting Loss
             # print(outputs.shape, outputs.dtype)
             # print(labels.shape, labels.dtype)
+            train_pck = compute_pck(outputs, labels, normalization_factor=compute_interocular_distance(labels))
+            batch_pck_list.append(train_pck)
+            # print(train_pck)
             # exit()
             batch_loss = criterion(outputs, labels)
             batch_loss_list.append(batch_loss.item())
@@ -52,14 +92,16 @@ def train_one_epoch(
 
 
             data.set_postfix(
-                batch_loss=batch_loss.item()
+                batch_loss=batch_loss.item(),
+                batch_pck=train_pck
             )
 
     
     return {
         'epoch_idx': epoch_index,
         'batch_losses': batch_loss_list,
-        'epoch_loss': np.mean(batch_loss_list)
+        'epoch_loss': np.mean(batch_loss_list),
+        'epoch_average_pck': np.mean(batch_pck_list)
     }
 
 
@@ -77,6 +119,7 @@ def test_one_epoch(
     with torch.no_grad():
         with tqdm(data_loader, unit='batch') as data:
             batch_loss_list = []
+            batch_pck_list = []
             for batch in data:
                 data.set_description(f"Testing after epoch{epoch_index}")
 
@@ -84,13 +127,17 @@ def test_one_epoch(
                 inputs = batch['image'].to(device)
                 labels = batch['keypoints'].to(device)
                 outputs = model(inputs)
+
+                test_pck = compute_pck(outputs, labels, normalization_factor=compute_interocular_distance(labels))
+                batch_pck_list.append(test_pck)
                 
                 # ? Getting Loss
                 batch_loss = criterion(outputs, labels)
                 batch_loss_list.append(batch_loss.item())
 
                 data.set_postfix(
-                    batch_loss=batch_loss.item()
+                    batch_loss=batch_loss.item(),
+                    batch_pck=test_pck
                 )
 
                 # TODO: Change logic to account for PCK (Percentage Correct Keypoints)
@@ -104,6 +151,7 @@ def test_one_epoch(
         'epoch_idx': epoch_index,
         'batch_losses': batch_loss_list,
         'epoch_loss': np.mean(batch_loss_list),
+        'epoch_average_pck': np.mean(batch_pck_list)
         # 'accuracy': (num_correct / num_samples).item()
     }
 
@@ -132,6 +180,7 @@ def train(
         )
         train_statistics_list.append(train_epoch_statistics)
         live.log_metric('train/loss', train_epoch_statistics['epoch_loss'], plot=True)
+        # live.log_metric('train/norm_loss', train_epoch_statistics['epoch_norm_loss'], plot=True)
         if scheduler:
             scheduler.step()
         
@@ -156,6 +205,8 @@ def train(
 
         # print(latest_test_acc, type(latest_test_acc))
         live.log_metric('test/loss', test_epoch_statistics['epoch_loss'], plot=True)
+        # live.log_metric('test/norm_loss', train_epoch_statistics['epoch_norm_loss'], plot=True)
+        live.log_metric('test/pck', test_epoch_statistics['epoch_average_pck'], plot=True)
         # live.log_metric('test/accuracy', test_epoch_statistics['accuracy'], plot=True)
 
 
