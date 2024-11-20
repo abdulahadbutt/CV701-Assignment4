@@ -5,6 +5,7 @@ stages:
     - data/
     - src/train.py
     - src/models.py
+    - src/dataset.py
     params:
     - MODEL_STRUCTURE
     - EPOCHS

@@ -32,9 +32,13 @@ class FacialKeypointsDataset(Dataset):
         if image.shape[2] == 4:
             image = image[:, :, 0:3]
 
+        # print(f'image shape: {image.shape}')
+        h, w, _ = image.shape 
         key_pts = self.key_pts_frame.iloc[idx, 1:].to_numpy()
         # ? Changed from astype("float") to astype("float32")
         key_pts = key_pts.astype("float32").reshape(-1, 2)
+
+        key_pts = self.normalize_height_width(w, h, key_pts)
         # print(f'before cast: {key_pts.dtype}')
         if self.transform:
             image = self.transform(image)
@@ -42,6 +46,12 @@ class FacialKeypointsDataset(Dataset):
 
 
         return sample
+
+
+    def normalize_height_width(self, width, height, keypoints):
+        keypoints[:, 0] = keypoints[:, 0] / height
+        keypoints[:, 1] = keypoints[:, 1] / width
+        return keypoints 
 
 
 if __name__ == '__main__':
@@ -65,4 +75,5 @@ if __name__ == '__main__':
     for i in train_dataset:
         keypoints = i['keypoints']
         print(keypoints.shape, keypoints.dtype)
+        print(keypoints[:5, :])
         break 
