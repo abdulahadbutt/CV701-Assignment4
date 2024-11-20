@@ -42,7 +42,13 @@ class FacialKeypointsDataset(Dataset):
         # print(f'before cast: {key_pts.dtype}')
         if self.transform:
             image = self.transform(image)
-        sample = {"image": image, "keypoints": key_pts}
+        sample = {
+            "image": image, 
+            "keypoints": key_pts, 
+            "original_width": w, 
+            "original_height": h,
+            "img_path": image_name
+        }
 
 
         return sample
