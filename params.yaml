@@ -3,14 +3,14 @@
 MODEL_STRUCTURE: resnet18
 
 # ? Hyperparameters
-EPOCHS: 10
-BATCH_SIZE: 16
+EPOCHS: 90
+BATCH_SIZE: 32
 IMG_SIZE : 224
 # Current optimzer support: sgd, adam, adamw, rmsprop
 OPTIMIZER: 'adam' 
-LEARNING_RATE: 0.001
-# Current scheduler support: None, 'constant', 'exponential'
-SCHEDULER: constant
+LEARNING_RATE: 0.01
+# Current scheduler support: None, 'constant', 'exponential', 'step'
+SCHEDULER: step
 # Current criterion support: mse, cross-entropy
 CRITERION: mse
 
