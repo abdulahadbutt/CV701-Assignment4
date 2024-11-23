@@ -248,6 +248,7 @@ SCHEDULER = params['SCHEDULER']
 MODEL_STRUCTURE = params['MODEL_STRUCTURE']
 
 CRITERION = params['CRITERION']
+FREEZE_LAYERS = params['FREEZE_LAYERS']
 
 # MAX_PARAMS = params['MAX_PARAMS']
 # MAX_EPOCHS = params['MAX_EPOCHS']
@@ -297,12 +298,17 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 if 'resnet' in MODEL_STRUCTURE:
     model = ResNet_landmark(
-        MODEL_STRUCTURE
+        MODEL_STRUCTURE, freeze=FREEZE_LAYERS
     )
 else:
     print('Invalid model structure listed')
     exit()
 
+# print(model)
+# for layers in model.model.parameters():
+#     print(layers.requires_grad)
+# print(len(model.model.parameters()))
+# exit()
 model.to(device)
 
 

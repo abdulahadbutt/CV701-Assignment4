@@ -9,32 +9,33 @@ stages:
       size: 2539
     - path: src/models.py
       hash: md5
-      md5: 451ee03baf3dec7a451d931b45fda4f8
-      size: 627
+      md5: d46862b1c30ce77b815092d1b0d19dd7
+      size: 1680
     - path: src/train.py
       hash: md5
-      md5: 11913188639b3d5f4c77d61a54927490
-      size: 10751
+      md5: fcda8cbdbb487f8b5389ba7162ddf8b0
+      size: 10952
     params:
       params.yaml:
         BATCH_SIZE: 32
         CRITERION: mse
-        EPOCHS: 90
+        EPOCHS: 30
+        FREEZE_LAYERS: true
         IMG_SIZE: 224
-        LEARNING_RATE: 0.01
+        LEARNING_RATE: 0.001
         MODEL_STRUCTURE: resnet18
         OPTIMIZER: adam
         SCHEDULER: step
     outs:
     - path: metrics
       hash: md5
-      md5: 76abd63748c9a97662a9b6cc1b7506ca.dir
-      size: 6474
+      md5: f5acef90fe802fbc1ccc08588752caf4.dir
+      size: 2311
       nfiles: 4
     - path: models
       hash: md5
-      md5: 6000be697f3f1cad8e6270f564d47bf5.dir
-      size: 270176276
+      md5: 4a3380c21a51f7cc4322d7c01bbb6387.dir
+      size: 225581616
       nfiles: 2
   inference:
     cmd: python src/inference.py
@@ -50,8 +51,8 @@ stages:
       size: 590606
     - path: models/
       hash: md5
-      md5: 6000be697f3f1cad8e6270f564d47bf5.dir
-      size: 270176276
+      md5: 4a3380c21a51f7cc4322d7c01bbb6387.dir
+      size: 225581616
       nfiles: 2
     - path: src/inference.py
       hash: md5
@@ -64,6 +65,6 @@ stages:
     outs:
     - path: data/predictions
       hash: md5
-      md5: 3093f49558aab972919a972ce423e658.dir
-      size: 105914806
+      md5: f8581176263b921333a71867805f4f63.dir
+      size: 105696257
       nfiles: 770
