@@ -21,8 +21,8 @@ def decode_predictions(predicted_keypoints, img_shape):
 
 
 def draw_keypoints(image, keypoints):
-    # image = np.copy(image)
-    image.setflags(write=1)
+    image = np.copy(image)
+    # image.setflags(write=1)
     for item in keypoints:
         print(item)
         y, x = item 
@@ -35,7 +35,7 @@ def draw_keypoints(image, keypoints):
 
 def load_checkpoint(path):
     model = ResNet_landmark()
-    weights = torch.load(path)['model']
+    weights = torch.load(path, map_location='cpu')['model']
     model.load_state_dict(weights)
     return model 
 
@@ -103,8 +103,8 @@ if __name__ == '__main__':
                 input_img = gr.Image(sources=["webcam"], type="numpy")
             with gr.Column():
                 output_img = gr.Image(streaming=True)
-            # dep = input_img.stream(process_video, [input_img], [output_img],
-            dep = input_img.stream(get_frame, [input_img], [output_img],
+            dep = input_img.stream(process_video, [input_img], [output_img],
+            # dep = input_img.stream(get_frame, [input_img], [output_img],
                                     time_limit=30, stream_every=0.1, concurrency_limit=30)
 
     demo.launch()
